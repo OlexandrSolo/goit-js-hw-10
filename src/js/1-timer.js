@@ -30,45 +30,58 @@ const elements = {
 const { userInput, strButton, userDays, userHours, userMinutes, userSeconds } =
   elements;
 
+strButton.disabled = true;
+let userSelectedDate = 0;
+let timerId = null;
+
+strButton.addEventListener('click', () => updateCountDown());
+
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    handlerUserInput(selectedDates[0]);
-    userInput.value = '';
+    handlerUserTime(selectedDates[0]);
+    userSelectedDate = selectedDates[0].getTime();
   },
 };
 flatpickr(userInput, options);
-let userSelectedDate = '';
-userInput.textContent = '';
-strButton.disabled = true;
 
-function handlerUserInput(results) {
-  const date = new Date();
-  if (date > results.getTime()) {
-    return alert('Please choose a date in the future');
+function handlerUserTime(timeInput) {
+  if (timeInput.getTime() < new Date().getTime()) {
+    iziToast.warning({
+      title: 'Warning',
+      message: 'Please choose a date in the future',
+    });
+    return;
   }
-  createTimer(results);
+  strButton.disabled = false;
 }
 
-userInput.addEventListener('input', evt => evt.preventDefault());
-
-function createTimer(res) {
-  setInterval(() => {
-    const date = new Date();
-    const value = res.getTime() - date.getTime();
-    const lastDate = convertMs(value);
-    createHTMLClock(lastDate);
-  }, 1000);
+function calculatedTimer() {
+  let now = new Date().getTime();
+  let future = userSelectedDate;
+  if (future - now <= 0) {
+    clearTimeout(timerId);
+    return convertMs(0);
+  }
+  strButton.disabled = true;
+  const counter = future - now;
+  const objDate = convertMs(counter);
+  createTimer(objDate);
+  updateCountDown();
 }
 
-function createHTMLClock(lastDate) {
-  userDays.textContent = lastDate.days;
-  userHours.textContent = lastDate.hours;
-  userMinutes.textContent = lastDate.minutes;
-  userSeconds.textContent = lastDate.seconds;
+function createTimer(obj) {
+  userDays.textContent = String(obj.days).padStart(2, '0');
+  userHours.textContent = String(obj.hours).padStart(2, '0');
+  userMinutes.textContent = String(obj.minutes).padStart(2, '0');
+  userSeconds.textContent = String(obj.seconds).padStart(2, '0');
+}
+
+function updateCountDown() {
+  timerId = setTimeout(calculatedTimer, 1000);
 }
 
 function convertMs(ms) {
@@ -79,17 +92,18 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = String(Math.floor(ms / day)).padStart(2, '0');
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = String(Math.floor((ms % day) / hour)).padStart(2, '0');
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = String(Math.floor(((ms % day) % hour) / minute)).padStart(
+    2,
+    '0'
+  );
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = String(
+    Math.floor((((ms % day) % hour) % minute) / second)
+  ).padStart(2, '0');
 
   return { days, hours, minutes, seconds };
 }
-
-// console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
