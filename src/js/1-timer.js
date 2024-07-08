@@ -30,7 +30,7 @@ const elements = {
 const { userInput, strButton, userDays, userHours, userMinutes, userSeconds } =
   elements;
 
-strButton.disabled = true;
+// strButton.disabled = true;
 let userSelectedDate = 0;
 let timerId = null;
 
@@ -57,6 +57,7 @@ function handlerUserTime(timeInput) {
     return;
   }
   strButton.disabled = false;
+  strButton.classList.add('isActive');
 }
 
 function calculatedTimer() {
@@ -64,9 +65,11 @@ function calculatedTimer() {
   let future = userSelectedDate;
   if (future - now <= 0) {
     clearTimeout(timerId);
+    userInput.disabled = false;
     return convertMs(0);
   }
   strButton.disabled = true;
+  strButton.classList.remove('isActive');
   const counter = future - now;
   const objDate = convertMs(counter);
   createTimer(objDate);
@@ -74,6 +77,7 @@ function calculatedTimer() {
 }
 
 function createTimer(obj) {
+  userInput.disabled = true;
   userDays.textContent = String(obj.days).padStart(2, '0');
   userHours.textContent = String(obj.hours).padStart(2, '0');
   userMinutes.textContent = String(obj.minutes).padStart(2, '0');
