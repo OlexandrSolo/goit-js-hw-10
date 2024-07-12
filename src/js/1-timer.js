@@ -1,22 +1,7 @@
-// додати елементи інтерфесу ✅
-// підключити бібліотеку flatpickr ✅
-// налаштувати бібліотеку
-//
-//
-//
-//
-//
-//
-//
-//
-
-// Описаний в документації
 import flatpickr from 'flatpickr';
-// Додатковий імпорт стилів
 import 'flatpickr/dist/flatpickr.min.css';
-// Описаний у документації
+
 import iziToast from 'izitoast';
-// Додатковий імпорт стилів
 import 'izitoast/dist/css/iziToast.min.css';
 
 const elements = {
@@ -30,7 +15,6 @@ const elements = {
 const { userInput, strButton, userDays, userHours, userMinutes, userSeconds } =
   elements;
 
-// strButton.disabled = true;
 let userSelectedDate = 0;
 let timerId = null;
 
@@ -48,32 +32,29 @@ const options = {
 };
 flatpickr(userInput, options);
 
-function handlerUserTime(timeInput) {
-  if (timeInput.getTime() < new Date().getTime()) {
-    iziToast.warning({
-      title: 'Warning',
-      message: 'Please choose a date in the future',
-    });
-    return;
-  }
-  strButton.disabled = false;
-  strButton.classList.add('isActive');
+function updateCountDown() {
+  timerId = setTimeout(calculatedTimer, 1000);
 }
 
 function calculatedTimer() {
   let now = new Date().getTime();
   let future = userSelectedDate;
-  if (future - now <= 0) {
+  const counter = future - now;
+  if (counter <= 0) {
     clearTimeout(timerId);
     userInput.disabled = false;
     return convertMs(0);
   }
-  strButton.disabled = true;
-  strButton.classList.remove('isActive');
-  const counter = future - now;
   const objDate = convertMs(counter);
   createTimer(objDate);
   updateCountDown();
+}
+
+function handlerUserTime(timeInput) {
+  if (timeInput.getTime() < new Date().getTime()) {
+    return createWarningMessage()
+  }
+  strButton.classList.add('isActive');
 }
 
 function createTimer(obj) {
@@ -84,8 +65,14 @@ function createTimer(obj) {
   userSeconds.textContent = String(obj.seconds).padStart(2, '0');
 }
 
-function updateCountDown() {
-  timerId = setTimeout(calculatedTimer, 1000);
+function createWarningMessage() {
+  iziToast.warning({
+    title: 'Warning',
+    message: 'Please choose a date in the future',
+  });
+  if (strButton.classList.contains("isActive")) {
+    strButton.classList.remove("isActive")
+  }
 }
 
 function convertMs(ms) {

@@ -35,7 +35,6 @@ function createPromise(obj) {
             message: `❌ Rejected promise in ${delay}ms`,
           })
         );
-        // rejected(`❌ Rejected promise in ${delay}ms`);
       }
     }, delay);
   });

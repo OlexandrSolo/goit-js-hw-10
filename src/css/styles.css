@@ -63,7 +63,7 @@ input:active {
   border: 1px solid #4e75ff;
 }
 
-button {
+/* button {
   height: 40px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
@@ -74,7 +74,7 @@ button {
   padding: 8px 16px;
   border: none;
   cursor: pointer;
-}
+} */
 
 textarea {
   resize: none;
@@ -115,8 +115,27 @@ input[type='text'] {
   margin-right: 10px;
 }
 
-.isActive {
+button[type='button'] {
+  height: 40px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  border-radius: 8px;
+  padding: 8px 16px;
+  border: none;
+  /* cursor: pointer; */
+  pointer-events: none;
+  color: #808080;
+}
+
+button[type='button'].isActive {
+  cursor: pointer;
+  pointer-events: all;
   background: #4e75ff;
+  color: black;
+  /* pointer-events: none; */
 }
 
 .isActive:hover {
